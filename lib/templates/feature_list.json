@@ -1,0 +1,24 @@
+{
+  "$schema": "https://agent-harness.dev/schemas/feature-list.json",
+  "version": "1.0",
+  "project": {
+    "name": "{{PROJECT_NAME}}",
+    "description": "{{PROJECT_DESCRIPTION}}",
+    "created": "{{CREATED_DATE}}"
+  },
+  "features": [
+    {
+      "id": "feat-001",
+      "category": "core",
+      "description": "示例特性 - 请替换为实际特性",
+      "steps": [
+        "步骤1: 描述验证步骤",
+        "步骤2: 描述预期结果"
+      ],
+      "priority": "high",
+      "passes": false,
+      "completed_at": null,
+      "notes": null
+    }
+  ]
+}

@@ -1,0 +1,86 @@
+#!/usr/bin/env bash
+# harness - Agent Harness CLI 入口
+
+set -e
+
+# 获取 harness 目录
+HARNESS_HOME="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+LIB_DIR="$HARNESS_HOME/lib"
+
+# 版本
+VERSION="1.0.0"
+
+# 帮助信息
+show_help() {
+    cat << EOF
+Agent Harness v$VERSION - 长期运行代理工作流框架
+
+用法: harness <命令> [选项]
+
+命令:
+  init <描述>     初始化项目工作流
+  run             运行工作流循环
+  status          显示项目状态
+  next            执行单个特性
+  reset           重置工作流状态
+
+选项:
+  -h, --help      显示帮助信息
+  -v, --version   显示版本信息
+
+示例:
+  harness init "构建用户认证系统"
+  harness run
+  harness status
+  harness next --feature auth-001
+
+更多信息: https://github.com/yourname/agent-harness
+EOF
+}
+
+# 检查命令是否存在
+check_command() {
+    local cmd="$1"
+    local cmd_file="$LIB_DIR/commands/${cmd}.sh"
+
+    if [[ ! -f "$cmd_file" ]]; then
+        echo "错误: 未知命令 '$cmd'" >&2
+        echo "" >&2
+        echo "可用命令: init, run, status, next, reset" >&2
+        exit 1
+    fi
+}
+
+# 主入口
+main() {
+    # 无参数时显示帮助
+    if [[ $# -eq 0 ]]; then
+        show_help
+        exit 0
+    fi
+
+    # 解析全局选项
+    case "$1" in
+        -h|--help)
+            show_help
+            exit 0
+            ;;
+        -v|--version)
+            echo "Agent Harness v$VERSION"
+            exit 0
+            ;;
+        init|run|status|next|reset)
+            local cmd="$1"
+            shift
+            check_command "$cmd"
+            source "$LIB_DIR/commands/${cmd}.sh"
+            ;;
+        *)
+            echo "错误: 未知命令 '$1'" >&2
+            echo "运行 'harness --help' 查看帮助" >&2
+            exit 1
+            ;;
+    esac
+}
+
+main "$@"

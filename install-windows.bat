@@ -1,5 +1,6 @@
 @echo off
-REM Agent Harness - Windows 安装脚本
+chcp 65001 >nul 2>&1
+REM Agent Harness - Windows Installation Script
 
 echo.
 echo ========================================
@@ -7,72 +8,72 @@ echo   Agent Harness - Windows Installer
 echo ========================================
 echo.
 
-REM 检查 Python
+REM Check Python
 python --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo [错误] 未找到 Python，请先安装 Python
-    echo 下载地址: https://www.python.org/downloads/
+if errorlevel 1 (
+    echo [ERROR] Python not found. Please install Python first.
+    echo Download: https://www.python.org/downloads/
     pause
     exit /b 1
 )
-echo [OK] Python 已安装
+echo [OK] Python installed
 
-REM 检查 Git
+REM Check Git
 git --version >nul 2>&1
-if %errorlevel% neq 0 (
-    echo [错误] 未找到 Git，请先安装 Git
-    echo 下载地址: https://git-scm.com/download/win
+if errorlevel 1 (
+    echo [ERROR] Git not found. Please install Git first.
+    echo Download: https://git-scm.com/download/win
     pause
     exit /b 1
 )
-echo [OK] Git 已安装
+echo [OK] Git installed
 
-REM 设置安装目录
-set INSTALL_DIR=%USERPROFILE%\.agent-harness
+REM Set installation directory
+set "INSTALL_DIR=%USERPROFILE%\.agent-harness"
 
-REM 检查是否已安装
+REM Check if already installed
 if exist "%INSTALL_DIR%" (
-    echo [信息] 已存在旧版本，正在更新...
-    rmdir /s /q "%INSTALL_DIR%"
+    echo [INFO] Updating existing installation...
 )
 
-REM 获取当前脚本目录
-set SCRIPT_DIR=%~dp0
+REM Get script directory
+set "SCRIPT_DIR=%~dp0"
 
-REM 复制文件
-echo [安装] 复制文件到 %INSTALL_DIR%...
-xcopy "%SCRIPT_DIR%*" "%INSTALL_DIR%\" /E /I /Q /Y
+REM Copy files
+echo [INSTALL] Copying files to %INSTALL_DIR%...
+if not exist "%INSTALL_DIR%" mkdir "%INSTALL_DIR%"
+xcopy "%SCRIPT_DIR%*" "%INSTALL_DIR%\" /E /I /Q /Y >nul 2>&1
 
-REM 安装 Claude Code 命令
-set COMMANDS_DIR=%USERPROFILE%\.claude\commands
+REM Install Claude Code commands
+set "COMMANDS_DIR=%USERPROFILE%\.claude\commands"
 if not exist "%COMMANDS_DIR%" mkdir "%COMMANDS_DIR%"
 
-copy "%INSTALL_DIR%\commands\init-harness.md" "%COMMANDS_DIR%\" >nul
-copy "%INSTALL_DIR%\commands\code-feature.md" "%COMMANDS_DIR%\" >nul
-echo [OK] Claude Code 命令已安装
+copy "%INSTALL_DIR%\commands\init-harness.md" "%COMMANDS_DIR%\" >nul 2>&1
+copy "%INSTALL_DIR%\commands\code-feature.md" "%COMMANDS_DIR%\" >nul 2>&1
+echo [OK] Claude Code commands installed
 
-REM 添加到 PATH
+REM Add to PATH
 echo.
 echo ========================================
-echo   安装完成!
+echo   Installation Complete!
 echo ========================================
 echo.
-echo 安装目录: %INSTALL_DIR%
+echo Installation directory: %INSTALL_DIR%
 echo.
-echo 下一步:
+echo Next steps:
 echo.
-echo   1. 打开新的命令行窗口
+echo   1. Open a new terminal window
 echo.
-echo   2. 添加到 PATH (选择一种方式):
+echo   2. Add to PATH (choose one method):
 echo.
-echo      方式 A - 临时添加 (每次使用前运行):
+echo      Method A - Temporary (run before each use):
 echo      set PATH=%%USERPROFILE%%\.agent-harness\bin;%%PATH%%
 echo.
-echo      方式 B - 永久添加:
+echo      Method B - Permanent:
 echo      setx PATH "%%USERPROFILE%%\.agent-harness\bin;%%PATH%%"
 echo.
-echo   3. 使用命令:
-echo      harness init "项目描述"
+echo   3. Use commands:
+echo      harness init "project description"
 echo      harness status
 echo      harness run
 echo.
